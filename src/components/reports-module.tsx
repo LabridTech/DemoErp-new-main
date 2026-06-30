@@ -213,7 +213,7 @@ export function ReportsModule() {
 
   return (
     <div className="space-y-6 min-h-[calc(100vh-80px)]">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Reports & Analytics</h2>
         <Button onClick={handleDownloadPDF} disabled={isGeneratingPDF}>
           {isGeneratingPDF ? (
@@ -234,7 +234,7 @@ export function ReportsModule() {
         style={{ boxShadow: resolvedTheme === "dark" ? "0 2px 8px #0006" : "0 2px 8px #0001" }}
       >
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-          <TabsList>
+          <TabsList className="flex flex-wrap h-auto justify-start gap-2">
             <TabsTrigger value="daily-sales">Daily Sales Summary</TabsTrigger>
             <TabsTrigger value="monthly-profit">Monthly Profit Report</TabsTrigger>
             <TabsTrigger value="bargain-impact">Bargain Impact Report</TabsTrigger>

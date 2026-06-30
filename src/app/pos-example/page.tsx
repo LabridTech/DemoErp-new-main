@@ -3,12 +3,12 @@
 import { usePOS } from "@/contexts/POSContext"
 
 export default function POSExamplePage() {
-  const { 
-    cart, 
-    addToCart, 
+  const {
+    cart,
+    addToCart,
     removeFromCart,
     updateQuantity,
-    customerName, 
+    customerName,
     setCustomerName,
     customerPhone,
     setCustomerPhone,
@@ -34,7 +34,7 @@ export default function POSExamplePage() {
 
   const handleAddSilk = () => {
     addToCart({
-      id: "2", 
+      id: "2",
       name: "Silk Fabric",
       code: "SF001",
       unitPrice: 1200,
@@ -53,7 +53,7 @@ export default function POSExamplePage() {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">POS Example Page</h1>
-      
+
       {/* Customer Information */}
       <div className="mb-6 p-4 border rounded-lg">
         <h2 className="text-xl font-semibold mb-4">Customer Information</h2>

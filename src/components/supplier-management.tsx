@@ -702,12 +702,12 @@ export function SupplierManagement() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="w-full sm:w-auto">
           <h1 className="text-3xl font-bold">Supplier Management</h1>
           <p className="text-muted-foreground">Manage your suppliers and their information</p>
         </div>
-        <div className="flex bg-muted/50 p-1 rounded-lg mr-2">
+        <div className="flex bg-muted/50 p-1 rounded-lg w-full sm:w-auto overflow-x-auto">
           <DateRangeFilter
             filterType={dateFilterType}
             onFilterTypeChange={setDateFilterType}
@@ -719,7 +719,7 @@ export function SupplierManagement() {
             }}
           />
         </div>
-        <Button onClick={() => setIsAddDialogOpen(true)}>
+        <Button className="w-full sm:w-auto" onClick={() => setIsAddDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Supplier
         </Button>

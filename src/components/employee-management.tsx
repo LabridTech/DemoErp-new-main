@@ -579,15 +579,15 @@ export function EmployeeManagement() {
       />
 
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Employee Management</h2>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={() => setIsAttendanceOpen(true)}>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button variant="outline" className="w-full sm:w-auto" onClick={() => setIsAttendanceOpen(true)}>
             <Clock className="h-4 w-4 mr-2" />
             Mark Attendance
           </Button>
 
-          <Button onClick={() => setIsAddEmployeeOpen(true)}>
+          <Button className="w-full sm:w-auto" onClick={() => setIsAddEmployeeOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Add Employee
           </Button>
@@ -655,7 +655,7 @@ export function EmployeeManagement() {
         </div>
         
         <Tabs defaultValue="employees" className="space-y-4">
-          <TabsList className="w-full justify-start">
+          <TabsList className="w-full justify-start flex-wrap h-auto gap-2 p-1">
             <TabsTrigger value="employees">👥 Employees</TabsTrigger>
             <TabsTrigger value="attendance">⏰ Attendance</TabsTrigger>
             <TabsTrigger value="payroll">💰 Payroll</TabsTrigger>

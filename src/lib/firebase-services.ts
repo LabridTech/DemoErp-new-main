@@ -1,6 +1,7 @@
 import { ref, push, set, get, update as fbUpdate, update, remove, onValue, off, runTransaction } from "firebase/database"
 import { db } from "@/lib/firebase";
 import { SalesCounterService } from "./sales-counter-service";
+import { SupplierInvoiceCounterService } from "./supplier-invoice-counter-service";
 // import { 
 //   collection, 
 //   doc, 
@@ -189,6 +190,34 @@ export interface Purchase {
   createdAt: string
   createdBy: string
   notes?: string
+  tax?: number
+}
+
+export interface PurchaseOrderItem {
+  productId: string
+  name: string
+  code: string
+  quantity: number
+  unitPrice: number
+  subtotal: number
+  fabricType?: string
+  size?: string
+}
+
+export interface PurchaseOrder {
+  id: string
+  poNumber: string
+  supplierId: string
+  supplierName: string
+  items: PurchaseOrderItem[]
+  status: "draft" | "approved" | "rejected"
+  totalAmount: number
+  createdAt: string
+  createdBy: string
+  approvedAt?: string
+  approvedBy?: string
+  rejectedAt?: string
+  rejectedBy?: string
 }
 
 export interface Employee {
@@ -260,6 +289,7 @@ export interface SaleRecord {
   staffName?: string
   notes: string
   returnStatus: "none" | "partial" | "full"
+  transactionType?: "retail" | "wholesale"
   createdAt?: string
   updatedAt?: string
 }
@@ -542,9 +572,28 @@ export interface Customer {
   taxNumber?: string
   notes: string
   status: "active" | "inactive"
+  loyaltyTier?: "Regular" | "Silver" | "Gold" | "Platinum"
+  loyaltyPoints?: number
   createdAt?: string
   updatedAt?: string
 }
+
+export interface Client {
+  id: string
+  name: string
+  email: string
+  phone: string
+  address: string
+  type: "individual" | "company"
+  creditLimit?: number
+  currentCredit?: number
+  notes?: string
+  status: "active" | "inactive"
+  createdAt?: string
+  updatedAt?: string
+}
+
+
 
 // Generic Firebase CRUD operations
 export class FirebaseService {
@@ -577,6 +626,7 @@ export class FirebaseService {
       throw error;
     }
   }
+
 
   // Read all with proper typing
   static async getAll<T>(path: string): Promise<T[]> {
@@ -1830,10 +1880,22 @@ export class CustomerService extends FirebaseService {
         ? sales.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0].date
         : undefined
 
+      let loyaltyTier: "Regular" | "Silver" | "Gold" | "Platinum" = "Regular"
+      if (totalSpent >= 500000) {
+        loyaltyTier = "Platinum"
+      } else if (totalSpent >= 150000) {
+        loyaltyTier = "Gold"
+      } else if (totalSpent >= 50000) {
+        loyaltyTier = "Silver"
+      }
+
       await this.updateCustomer(customer.id, {
         totalPurchases,
         totalSpent,
-        lastPurchaseDate
+        lastPurchaseDate,
+        loyaltyTier,
+        loyaltyPoints: Math.floor(totalSpent / 100),
+        customerType: (loyaltyTier === "Platinum" || loyaltyTier === "Gold" ? "vip" : "regular")
       })
     }
   }
@@ -2570,5 +2632,311 @@ export class ApplicationSettingsService {
       }
     });
     return unsubscribe;
+  }
+}
+
+// Procurement Services
+export class ProcurementService extends FirebaseService {
+  static async scanStockAndGenerateDrafts(createdBy: string = "System"): Promise<number> {
+    if (!isFirebaseInitialized()) return 0;
+
+    try {
+      // 1. Fetch all products, purchases, and suppliers
+      const [products, purchases, suppliers] = await Promise.all([
+        ProductService.getAllProducts(),
+        PurchaseService.getAllPurchases(),
+        SupplierService.getAllSuppliers()
+      ]);
+
+      // 2. Identify products below reorder point (stock <= minStock)
+      const lowStockProducts = products.filter(p => p.stock <= p.minStock);
+      if (lowStockProducts.length === 0) return 0;
+
+      // 3. Find the best supplier for each low stock product
+      // Group reorder items by supplier name/id
+      const supplierGroups: Record<string, { supplier: Supplier; items: PurchaseOrderItem[] }> = {};
+      const unknownSupplierItems: PurchaseOrderItem[] = [];
+
+      for (const product of lowStockProducts) {
+        const qtyNeeded = product.maxStock - product.stock;
+        if (qtyNeeded <= 0) continue;
+
+        // Find supplier price history from past purchases
+        const supplierPrices: Record<string, { unitPrice: number; date: string }> = {};
+
+        purchases.forEach(purchase => {
+          const item = purchase.items.find(i => i.productId === product.id);
+          if (item && purchase.supplierId) {
+            const price = item.unitPrice;
+            const date = purchase.createdAt || purchase.date || "";
+            // We want the lowest price. If we already have a record for this supplier, update if this one is lower
+            if (!supplierPrices[purchase.supplierId] || supplierPrices[purchase.supplierId].unitPrice > price) {
+              supplierPrices[purchase.supplierId] = { unitPrice: price, date };
+            }
+          }
+        });
+
+        // Determine best supplier: lowest recent unit price
+        let bestSupplierId = "";
+        let bestPrice = product.purchaseCost; // Default to product's cost
+
+        const supplierIds = Object.keys(supplierPrices);
+        if (supplierIds.length > 0) {
+          // Sort by price ascending
+          supplierIds.sort((a, b) => supplierPrices[a].unitPrice - supplierPrices[b].unitPrice);
+          bestSupplierId = supplierIds[0];
+          bestPrice = supplierPrices[bestSupplierId].unitPrice;
+        }
+
+        let matchedSupplier: Supplier | undefined;
+        if (bestSupplierId) {
+          matchedSupplier = suppliers.find(s => s.id === bestSupplierId);
+        }
+
+        // If no purchase history, find supplier by matching product's supplier name field
+        if (!matchedSupplier && product.supplier) {
+          matchedSupplier = suppliers.find(s =>
+            s.name.toLowerCase().trim() === product.supplier.toLowerCase().trim()
+          );
+        }
+
+        const item: PurchaseOrderItem = {
+          productId: product.id,
+          name: product.name,
+          code: product.code,
+          quantity: qtyNeeded,
+          unitPrice: bestPrice,
+          subtotal: qtyNeeded * bestPrice,
+          fabricType: product.fabricType,
+          size: product.size
+        };
+
+        if (matchedSupplier) {
+          if (!supplierGroups[matchedSupplier.id]) {
+            supplierGroups[matchedSupplier.id] = {
+              supplier: matchedSupplier,
+              items: []
+            };
+          }
+          supplierGroups[matchedSupplier.id].items.push(item);
+        } else {
+          // No matched supplier in DB, group them under a placeholder or first supplier,
+          // or fallback to a default/placeholder supplier or "Unknown Supplier"
+          const defaultSupplier = suppliers.length > 0 ? suppliers[0] : null;
+          if (defaultSupplier) {
+            if (!supplierGroups[defaultSupplier.id]) {
+              supplierGroups[defaultSupplier.id] = {
+                supplier: defaultSupplier,
+                items: []
+              };
+            }
+            supplierGroups[defaultSupplier.id].items.push(item);
+          } else {
+            // No supplier exists in database at all
+            unknownSupplierItems.push(item);
+          }
+        }
+      }
+
+      let generatedCount = 0;
+
+      // 4. Create Draft Purchase Orders
+      for (const [supplierId, group] of Object.entries(supplierGroups)) {
+        if (group.items.length === 0) continue;
+
+        const totalAmount = group.items.reduce((sum, item) => sum + item.subtotal, 0);
+        const poNumber = `PO-${Math.floor(100000 + Math.random() * 900000)}`;
+
+        const draftPO: Omit<PurchaseOrder, "id"> = {
+          poNumber,
+          supplierId,
+          supplierName: group.supplier.name,
+          items: group.items,
+          status: "draft",
+          totalAmount,
+          createdAt: new Date().toISOString(),
+          createdBy
+        };
+
+        await this.create("purchaseOrders", draftPO as unknown as Record<string, unknown>);
+        generatedCount++;
+      }
+
+      // If there are unknown supplier items and no suppliers exist in the DB
+      if (unknownSupplierItems.length > 0 && suppliers.length === 0) {
+        const totalAmount = unknownSupplierItems.reduce((sum, item) => sum + item.subtotal, 0);
+        const poNumber = `PO-${Math.floor(100000 + Math.random() * 900000)}`;
+        const draftPO: Omit<PurchaseOrder, "id"> = {
+          poNumber,
+          supplierId: "unknown",
+          supplierName: "Unknown Supplier",
+          items: unknownSupplierItems,
+          status: "draft",
+          totalAmount,
+          createdAt: new Date().toISOString(),
+          createdBy
+        };
+        await this.create("purchaseOrders", draftPO as unknown as Record<string, unknown>);
+        generatedCount++;
+      }
+
+      return generatedCount;
+    } catch (error) {
+      console.error("Error scanning stock and generating drafts:", error);
+      throw error;
+    }
+  }
+
+  static async approvePurchaseOrder(poId: string, approvedBy: string = "System"): Promise<void> {
+    if (!isFirebaseInitialized()) return;
+
+    try {
+      // 1. Fetch the Purchase Order
+      const po = await this.getById<PurchaseOrder>("purchaseOrders", poId);
+      if (!po) throw new Error("Purchase Order not found");
+      if (po.status !== "draft") throw new Error(`Purchase Order is already ${po.status}`);
+
+      // 2. Generate a sequential supplier invoice number
+      const invoiceNumber = await SupplierInvoiceCounterService.getNextSupplierInvoiceNumber();
+
+      // 3. Create a finalized Purchase record
+      // We need to fetch supplier details to ensure phone/address are populated
+      const supplier = await SupplierService.getSupplierById(po.supplierId);
+      const supplierPhone = supplier?.phone || "";
+      const supplierAddress = supplier?.address || "";
+
+      const purchaseItems = po.items.map(item => ({
+        productId: item.productId,
+        name: item.name,
+        code: item.code,
+        quantity: item.quantity,
+        unitPrice: item.unitPrice,
+        subtotal: item.subtotal,
+        fabricType: item.fabricType,
+        size: item.size
+      }));
+
+      const purchaseData: Omit<Purchase, "id"> = {
+        invoiceNumber,
+        supplierId: po.supplierId,
+        supplierName: po.supplierName,
+        supplierPhone,
+        supplierAddress,
+        items: purchaseItems,
+        subtotal: po.totalAmount,
+        discount: 0,
+        totalAmount: po.totalAmount,
+        paymentMethod: "credit", // Default to credit as approved PO
+        paymentStatus: "pending",
+        remainingAmount: po.totalAmount,
+        staffMember: approvedBy,
+        createdAt: new Date().toISOString(),
+        createdBy: approvedBy
+      };
+
+      await PurchaseService.createPurchase(purchaseData);
+
+      // 4. Update product stocks and add stock movements
+      for (const item of po.items) {
+        const product = await ProductService.getById<Product>("products", item.productId);
+        if (product) {
+          await ProductService.updateProduct(item.productId, {
+            stock: product.stock + item.quantity,
+            purchaseCost: item.unitPrice,
+            updatedAt: new Date().toISOString()
+          });
+
+          await ProductService.addStockMovement({
+            itemId: item.productId,
+            itemName: item.name,
+            type: "in",
+            quantity: item.quantity,
+            reason: `PO Approved Restock - Price: Rs${item.unitPrice}`,
+            staff: approvedBy,
+            date: new Date().toISOString(),
+            reference: invoiceNumber
+          });
+        }
+      }
+
+      // 5. Mark PO as approved
+      await this.update("purchaseOrders", poId, {
+        status: "approved",
+        approvedAt: new Date().toISOString(),
+        approvedBy
+      });
+
+    } catch (error) {
+      console.error("Error approving purchase order:", error);
+      throw error;
+    }
+  }
+
+  static async rejectPurchaseOrder(poId: string, rejectedBy: string = "System"): Promise<void> {
+    if (!isFirebaseInitialized()) return;
+    try {
+      await this.update("purchaseOrders", poId, {
+        status: "rejected",
+        rejectedAt: new Date().toISOString(),
+        rejectedBy
+      });
+    } catch (error) {
+      console.error("Error rejecting purchase order:", error);
+      throw error;
+    }
+  }
+
+  static async getDraftPOs(): Promise<PurchaseOrder[]> {
+    const all = await this.getAll<PurchaseOrder>("purchaseOrders");
+    return all.filter(po => po.status === "draft");
+  }
+
+  static subscribeToPurchaseOrders(callback: (orders: PurchaseOrder[]) => void): () => void {
+    return this.subscribe<PurchaseOrder>("purchaseOrders", callback);
+  }
+}
+
+export interface TaxSummary {
+  outputVatRetail: number
+  outputVatWholesale: number
+  totalOutputVat: number
+  totalInputVat: number
+  netVatBalance: number
+}
+
+export class TaxService extends FirebaseService {
+  static async getTaxSummary(): Promise<TaxSummary> {
+    const [sales, purchases] = await Promise.all([
+      SalesService.getAllSales(),
+      PurchaseService.getAllPurchases()
+    ]);
+
+    let outputVatRetail = 0;
+    let outputVatWholesale = 0;
+
+    sales.forEach(sale => {
+      const tax = sale.tax || 0;
+      if (sale.transactionType === "wholesale") {
+        outputVatWholesale += tax;
+      } else {
+        outputVatRetail += tax;
+      }
+    });
+
+    let totalInputVat = 0;
+    purchases.forEach(purchase => {
+      totalInputVat += purchase.tax || 0;
+    });
+
+    const totalOutputVat = outputVatRetail + outputVatWholesale;
+    const netVatBalance = totalOutputVat - totalInputVat;
+
+    return {
+      outputVatRetail,
+      outputVatWholesale,
+      totalOutputVat,
+      totalInputVat,
+      netVatBalance
+    };
   }
 }

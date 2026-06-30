@@ -1573,29 +1573,32 @@ export function SalesLedger() {
         />
       ) : (
         <>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <h2 className="text-3xl font-bold tracking-tight">Sales Ledger</h2>
-            <div className="flex bg-muted/50 p-1 rounded-lg">
-              <DateRangeFilter
-                filterType={dateFilterType}
-                onFilterTypeChange={setDateFilterType}
-                startDate={startDate}
-                endDate={endDate}
-                onDateRangeChange={(start, end) => {
-                  setStartDate(start);
-                  setEndDate(end);
-                }}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsReportDialogOpen(true)}
-                disabled={isGeneratingReport}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                {isGeneratingReport ? "Generating..." : "Generate Report"}
-              </Button>
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
+              <div className="flex bg-muted/50 p-1 rounded-lg overflow-x-auto w-full sm:w-auto">
+                <DateRangeFilter
+                  filterType={dateFilterType}
+                  onFilterTypeChange={setDateFilterType}
+                  startDate={startDate}
+                  endDate={endDate}
+                  onDateRangeChange={(start, end) => {
+                    setStartDate(start);
+                    setEndDate(end);
+                  }}
+                />
+              </div>
+              <div className="flex gap-2 w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  onClick={() => setIsReportDialogOpen(true)}
+                  disabled={isGeneratingReport}
+                  className="w-full sm:w-auto"
+                >
+                  <FileText className="h-4 w-4 mr-2" />
+                  {isGeneratingReport ? "Generating..." : "Generate Report"}
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -1656,7 +1659,7 @@ export function SalesLedger() {
             {/* Show tabs - credit sale detail functionality removed in favor of customer credits */}
             {(
               <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-                <TabsList className="w-full justify-start">
+                <TabsList className="w-full justify-start flex-wrap h-auto gap-2 p-1">
                   <TabsTrigger value="all-sales">📊 All Sales</TabsTrigger>
                   <TabsTrigger value="pending-delivery">📅 Today&apos;s Sales</TabsTrigger>
                   <TabsTrigger value="pending-payment">💳 Pending Payment</TabsTrigger>
@@ -1672,38 +1675,41 @@ export function SalesLedger() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="flex gap-4">
-                        <div className="flex-1">
+                      <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1 w-full">
                           <Input
                             placeholder="Search by invoice, customer name, or phone..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full"
                           />
                         </div>
 
-                        <Select value={statusFilter} onValueChange={setStatusFilter}>
-                          <SelectTrigger className="w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All Status</SelectItem>
-                            <SelectItem value="pickup">Pickup</SelectItem>
-                            <SelectItem value="delivered">Delivered</SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
-                            <SelectItem value="cancelled">Cancelled</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <Select value={paymentFilter} onValueChange={setPaymentFilter}>
-                          <SelectTrigger className="w-40">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">All Payments</SelectItem>
-                            <SelectItem value="paid">Paid</SelectItem>
-                            <SelectItem value="partial">Partial</SelectItem>
-                            <SelectItem value="pending">Pending</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <div className="flex flex-row gap-2 w-full md:w-auto">
+                          <Select value={statusFilter} onValueChange={setStatusFilter}>
+                            <SelectTrigger className="w-full md:w-40">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Status</SelectItem>
+                              <SelectItem value="pickup">Pickup</SelectItem>
+                              <SelectItem value="delivered">Delivered</SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
+                              <SelectItem value="cancelled">Cancelled</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <Select value={paymentFilter} onValueChange={setPaymentFilter}>
+                            <SelectTrigger className="w-full md:w-40">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All Payments</SelectItem>
+                              <SelectItem value="paid">Paid</SelectItem>
+                              <SelectItem value="partial">Partial</SelectItem>
+                              <SelectItem value="pending">Pending</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>

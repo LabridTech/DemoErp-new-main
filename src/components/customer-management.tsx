@@ -17,7 +17,7 @@ import { CustomerEditDialog } from "@/components/modules/customer-management/cus
 import { CustomerDeleteDialog } from "@/components/modules/customer-management/customer-delete-dialog"
 import { CustomerDetail } from "@/components/modules/customer-management/customer-detail"
 
-export function CustomerManagement() {
+export default function CustomerManagement() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
@@ -408,10 +408,10 @@ export function CustomerManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
           <h2 className="text-3xl font-bold tracking-tight">Customer Management</h2>
-          <div className="flex bg-muted/50 p-1 rounded-lg">
+          <div className="flex bg-muted/50 p-1 rounded-lg w-full sm:w-auto overflow-x-auto">
             <DateRangeFilter
               filterType={dateFilterType}
               onFilterTypeChange={setDateFilterType}
@@ -424,7 +424,7 @@ export function CustomerManagement() {
             />
           </div>
         </div>
-        <Button onClick={() => {
+        <Button className="w-full sm:w-auto" onClick={() => {
           setSelectedCustomer({
             id: "",
             name: "",
@@ -492,7 +492,7 @@ export function CustomerManagement() {
       </div>
 
       <Tabs defaultValue="all-customers" className="space-y-4">
-        <TabsList>
+        <TabsList className="w-full justify-start flex-wrap h-auto gap-2 p-1">
           <TabsTrigger value="all-customers">All Customers</TabsTrigger>
           <TabsTrigger value="top-customers">Top Customers</TabsTrigger>
           <TabsTrigger value="recent-customers">Recent Customers</TabsTrigger>

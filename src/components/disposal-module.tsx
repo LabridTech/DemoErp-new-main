@@ -1387,9 +1387,9 @@ export function DisposalModule() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Disposal Management</h2>
-        <Button onClick={() => setIsDialogOpen(true)}>
+        <Button className="w-full sm:w-auto" onClick={() => setIsDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />
           Add Disposal
         </Button>
@@ -1529,7 +1529,7 @@ export function DisposalModule() {
         
         {/* Tabs */}
         <Tabs defaultValue="customer-returns" className="space-y-4">
-          <TabsList className="w-full justify-start">
+          <TabsList className="w-full justify-start flex-wrap h-auto gap-2 p-1">
             <TabsTrigger value="customer-returns">🔄 Customer Returns</TabsTrigger>
             <TabsTrigger value="supplier-returns">🏭 Supplier Returns</TabsTrigger>
             <TabsTrigger value="records">📋 Disposal Records</TabsTrigger>

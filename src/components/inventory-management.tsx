@@ -212,9 +212,9 @@ export function InventoryManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h2 className="text-3xl font-bold tracking-tight">Inventory Management</h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           {/* Remove add/edit/delete buttons */}
         </div>
       </div>
@@ -270,7 +270,7 @@ export function InventoryManagement() {
         </div>
 
         <Tabs defaultValue="inventory" className="space-y-4">
-          <TabsList className="w-full justify-start">
+          <TabsList className="w-full justify-start flex-wrap h-auto gap-2 p-1">
             <TabsTrigger value="inventory">📦 Inventory Items</TabsTrigger>
             <TabsTrigger value="movements">📊 Stock Movements</TabsTrigger>
             <TabsTrigger value="alerts">⚠️ Stock Alerts</TabsTrigger>
