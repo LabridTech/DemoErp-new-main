@@ -4,7 +4,12 @@
       "Bash(npm run lint 2>&1 || true)",
       "Bash(npm run lint 2>&1 || true)",
       "Bash(npm run type-check 2>&1 || true)",
-      "Bash(npm run build 2>&1 || true)"
+      "Bash(npm run build 2>&1 || true)",
+      "Bash(npm run type-check 2>&1 || true)",
+      "Bash(npm run build 2>&1 || true)",
+      "Bash(npm run lint 2>&1 || true)",
+      "Bash(npm run build 2>&1)",
+      "Bash(npx eslint src/components/general-ledger-management.tsx 2>&1)"
     ]
   }
 }

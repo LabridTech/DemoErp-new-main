@@ -68,10 +68,11 @@ export function WarehouseManagement() {
         StockTransferService.getTransfers(),
         ProductService.getAllProducts()
       ])
-      setWarehouses(whs)
-      setWarehouseStocks(stocks)
-      setTransfers(trs)
-      setProducts(prods)
+      setWarehouses(Array.isArray(whs) ? whs.filter(Boolean) : [])
+      setWarehouseStocks(Array.isArray(stocks) ? stocks.filter(Boolean) : [])
+      setTransfers(Array.isArray(trs) ? trs.filter(Boolean) : [])
+      // Sanitize: only keep valid product objects (filter out null/undefined/primitives)
+      setProducts(Array.isArray(prods) ? prods.filter(p => p && typeof p === 'object') : [])
     } catch (err) {
       console.error("Error loading warehouse data:", err)
       toast({ title: "Error", description: "Failed to load data.", variant: "destructive" })
@@ -211,12 +212,10 @@ export function WarehouseManagement() {
   const getWarehouseName = (id: string) => warehouses.find(w => w.id === id)?.name || id
 
   const filteredProducts = products.filter(p => {
-    console.log("p", p);
-    if (!p) return false;
-    console.log("p", p);
-    const nameStr = p.name ? String(p.name) : "";
-    const codeStr = p.code ? String(p.code) : "";
-    const searchStr = searchTerm ? String(searchTerm) : "";
+    if (!p || typeof p !== 'object') return false;
+    const nameStr = p.name ? String(p.name).toLowerCase() : "";
+    const codeStr = p.code ? String(p.code).toLowerCase() : "";
+    const searchStr = searchTerm ? String(searchTerm).toLowerCase() : "";
     return nameStr.includes(searchStr) || codeStr.includes(searchStr);
   })
 

@@ -38,6 +38,7 @@ import { WarehouseManagement } from "@/components/warehouse-management"
 import { SecurityCenter } from "@/components/security-center"
 import { AutomatedProcurement } from "@/components/automated-procurement"
 import { InsightsDashboard } from "@/components/insights-dashboard"
+import { GeneralLedgerManagement } from "@/components/general-ledger-management"
 
 // import Dashboard from "@/components/dashboard"
 // import { POSModule } from "@/components/pos-module"
@@ -167,7 +168,7 @@ export default function ERPSystem() {
             <ReportsModule />
           </RoleProtectedRoute>
         )
-      case "client-management":
+      case "customer-management":
         return (
           <RoleProtectedRoute allowedRoles={["admin"]}>
             <CustomerManagement />
@@ -237,6 +238,12 @@ export default function ERPSystem() {
             <AccountReceivableManagement />
           </RoleProtectedRoute>
         )
+      case "general-ledger":
+        return (
+          <RoleProtectedRoute allowedRoles={["admin"]}>
+            <GeneralLedgerManagement />
+          </RoleProtectedRoute>
+        )
       default:
         return <Dashboard />
     }
@@ -261,6 +268,7 @@ export default function ERPSystem() {
     "daily-expenses": "Daily Expenses", disposal: "Credit Node (Returns)",
     dashboard: "Dashboard", "all-payments": "All Payments", "supplier-management": "Supplier Management",
     "petty-cash": "Petty Cash", "automated-procurement": "Automated Procurement", "insights": "Insights Dashboard",
+    "general-ledger": "General Ledger Management",
   }
 
   return (

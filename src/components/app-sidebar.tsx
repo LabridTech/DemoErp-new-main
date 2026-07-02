@@ -49,6 +49,7 @@ const financialItems: MenuItem[] = [
   { title: "Petty Cash", icon: Receipt, id: "petty-cash", allowedRoles: ["admin"] },
   { title: "Account Payable", icon: CreditCard, id: "account-payable", allowedRoles: ["admin"] },
   { title: "Account Receivable", icon: CreditCard, id: "account-receivable", allowedRoles: ["admin"] },
+  { title: "General Ledger", icon: CreditCard, id: "general-ledger", allowedRoles: ["admin"] },
 ];
 
 
