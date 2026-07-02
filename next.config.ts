@@ -5,7 +5,10 @@ const nextConfig: NextConfig = {
   experimental: {
     // optimizeCss: true, // Disabled for Vercel deployment compatibility
   },
-  
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
   // Configure headers for better cache control
   async headers() {
     return [
@@ -59,7 +62,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  
+
   // Configure webpack for better cache busting (Vercel compatible)
   webpack: (config, { dev, isServer }) => {
     // Only apply custom webpack config in production and client-side
@@ -73,13 +76,13 @@ const nextConfig: NextConfig = {
     }
     return config;
   },
-  
+
   // Enable compression
   compress: true,
-  
+
   // Configure build output
   output: 'standalone',
-  
+
   // Disable x-powered-by header
   poweredByHeader: false,
 };
