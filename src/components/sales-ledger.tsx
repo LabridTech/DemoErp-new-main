@@ -1533,7 +1533,7 @@ export function SalesLedger() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {showCustomerProfilePage && selectedCustomerForProfilePage ? (
         <CustomerProfilePage
           customer={selectedCustomerForProfilePage}
@@ -1574,7 +1574,7 @@ export function SalesLedger() {
       ) : (
         <>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <h2 className="text-3xl font-bold tracking-tight">Sales Ledger</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Sales Ledger</h2>
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <div className="flex bg-muted/50 p-1 rounded-lg overflow-x-auto w-full sm:w-auto">
                 <DateRangeFilter
@@ -1603,7 +1603,7 @@ export function SalesLedger() {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-2 sm:gap-3 md:gap-4 md:grid-cols-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">Total Sales</CardTitle>
@@ -1728,13 +1728,13 @@ export function SalesLedger() {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Invoice</TableHead>
-                              <TableHead>Customer</TableHead>
-                              <TableHead>Items</TableHead>
+                              <TableHead className="min-w-[140px]">Invoice</TableHead>
+                              <TableHead className="min-w-[160px]">Customer</TableHead>
+                              <TableHead className="hidden sm:table-cell">Items</TableHead>
                               <TableHead>Amount</TableHead>
                               <TableHead>Payment</TableHead>
-                              <TableHead>Delivery</TableHead>
-                              <TableHead>Staff</TableHead>
+                              <TableHead className="hidden md:table-cell">Delivery</TableHead>
+                              <TableHead className="hidden lg:table-cell">Staff</TableHead>
                               <TableHead>Actions</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -1761,7 +1761,7 @@ export function SalesLedger() {
                                     </Badge>
                                   </div>
                                 </TableCell>
-                                <TableCell className="h-24 align-top">
+                                <TableCell className="h-24 align-top hidden sm:table-cell">
                                   <div>
                                     <p className="text-sm">{record.items?.length ?? 0} items</p>
                                     <p className="text-xs text-muted-foreground">
@@ -1787,7 +1787,7 @@ export function SalesLedger() {
                                     <p className="text-xs text-muted-foreground">{record.paymentMethod}</p>
                                   </div>
                                 </TableCell>
-                                <TableCell className="h-24 align-top">
+                                <TableCell className="h-24 align-top hidden md:table-cell">
                                   <div className="space-y-1">
                                     <Badge variant={getDeliveryStatusColor(record.deliveryStatus) as "destructive" | "default" | "secondary" | "outline" | undefined}>
                                       {record.deliveryStatus}
@@ -1801,11 +1801,11 @@ export function SalesLedger() {
                                     )}
                                   </div>
                                 </TableCell>
-                                <TableCell className="h-24 align-top">
+                                <TableCell className="h-24 align-top hidden lg:table-cell">
                                   <p className="text-sm">{record.staffName || record.staffMember}</p>
                                 </TableCell>
                                 <TableCell className="h-24 align-top">
-                                  <div className="flex gap-1">
+                                  <div className="flex flex-wrap gap-1">
                                     <Button
                                       size="sm"
                                       variant="outline"
@@ -1911,13 +1911,13 @@ export function SalesLedger() {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead>Invoice</TableHead>
-                              <TableHead>Customer</TableHead>
-                              <TableHead>Items</TableHead>
+                              <TableHead className="min-w-[140px]">Invoice</TableHead>
+                              <TableHead className="min-w-[160px]">Customer</TableHead>
+                              <TableHead className="hidden sm:table-cell">Items</TableHead>
                               <TableHead>Amount</TableHead>
                               <TableHead>Payment</TableHead>
-                              <TableHead>Delivery</TableHead>
-                              <TableHead>Staff</TableHead>
+                              <TableHead className="hidden md:table-cell">Delivery</TableHead>
+                              <TableHead className="hidden lg:table-cell">Staff</TableHead>
                               <TableHead>Actions</TableHead>
                             </TableRow>
                           </TableHeader>
@@ -1944,7 +1944,7 @@ export function SalesLedger() {
                                     </Badge>
                                   </div>
                                 </TableCell>
-                                <TableCell className="h-24 align-top">
+                                <TableCell className="h-24 align-top hidden sm:table-cell">
                                   <div>
                                     <p className="text-sm">{record.items?.length ?? 0} items</p>
                                     <p className="text-xs text-muted-foreground">
@@ -1970,7 +1970,7 @@ export function SalesLedger() {
                                     <p className="text-xs text-muted-foreground">{record.paymentMethod}</p>
                                   </div>
                                 </TableCell>
-                                <TableCell className="h-24 align-top">
+                                <TableCell className="h-24 align-top hidden md:table-cell">
                                   <div className="space-y-1">
                                     <Badge variant={getDeliveryStatusColor(record.deliveryStatus) as "destructive" | "default" | "secondary" | "outline" | undefined}>
                                       {record.deliveryStatus}
@@ -1983,11 +1983,11 @@ export function SalesLedger() {
                                     )}
                                   </div>
                                 </TableCell>
-                                <TableCell className="h-24 align-top">
+                                <TableCell className="h-24 align-top hidden lg:table-cell">
                                   <p className="text-sm">{record.staffName || record.staffMember}</p>
                                 </TableCell>
                                 <TableCell className="h-24 align-top">
-                                  <div className="flex gap-1">
+                                  <div className="flex flex-wrap gap-1">
                                     <Button
                                       size="sm"
                                       variant="outline"

@@ -285,11 +285,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex-1 space-y-6 p-4 md:p-8 pt-6">
-      <div className="rounded-3xl border border-border/70 bg-card/70 p-5 shadow-sm backdrop-blur-sm">
-        <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between md:space-y-0">
+    <div className="flex-1 space-y-4 sm:space-y-6 p-2 sm:p-4 md:p-8 pt-4 sm:pt-6">
+      <div className="rounded-3xl border border-border/70 bg-card/70 p-3 sm:p-5 shadow-sm backdrop-blur-sm">
+        <div className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Dashboard</h2>
             <p className="text-sm text-muted-foreground">Business insights and live performance overview</p>
           </div>
           <div className="flex items-center space-x-2">
@@ -307,7 +307,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-2 sm:gap-3 md:gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="hover:shadow-lg transition-shadow border-l-4 border-l-blue-500 bg-card/90 backdrop-blur-sm">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
@@ -368,7 +368,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 sm:gap-3 md:gap-4 lg:grid-cols-2">
         <Card className="col-span-1 hover:shadow-lg transition-shadow rounded-2xl border-border/80 bg-card/90 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Sales Overview</CardTitle>
@@ -387,7 +387,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:gap-3 md:gap-4 lg:grid-cols-3">
         <Card className="col-span-1 hover:shadow-lg transition-shadow rounded-2xl border-border/80 bg-card/90 backdrop-blur-sm">
           <CardHeader>
             <CardTitle>Yearly Breakup</CardTitle>

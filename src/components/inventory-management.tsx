@@ -291,12 +291,12 @@ export function InventoryManagement() {
                     <TableHeader>
                       <TableRow>
                         <TableHead>Item</TableHead>
-                        <TableHead>Type</TableHead>
+                        <TableHead className="hidden sm:table-cell">Type</TableHead>
                         <TableHead>Stock Level</TableHead>
-                        <TableHead>Location</TableHead>
-                        <TableHead>Pricing</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Last Stock Update</TableHead>
+                        <TableHead className="hidden md:table-cell">Location</TableHead>
+                        <TableHead className="hidden lg:table-cell">Pricing</TableHead>
+                        <TableHead className="hidden sm:table-cell">Status</TableHead>
+                        <TableHead className="hidden lg:table-cell">Last Stock Update</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -311,33 +311,33 @@ export function InventoryManagement() {
                         return (
                           <TableRow key={`${item.id}-${index}`}>
                             <TableCell>
-                              <div>
-                                <p className="font-medium">{item.name}</p>
-                                <p className="text-sm text-muted-foreground">{item.code}</p>
+                              <div className="min-w-[150px]">
+                                <p className="font-medium text-xs sm:text-sm truncate" title={item.name}>{item.name}</p>
+                                <p className="text-xs text-muted-foreground truncate" title={item.code}>{item.code}</p>
                               </div>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden sm:table-cell">
                               <div className="text-sm">
                                 <p className="font-medium">{item.fabricType}</p>
                               </div>
                             </TableCell>
                             <TableCell>
                               <div>
-                                <p className="font-medium">{item.stock}</p>
-                                <p className={`text-sm ${lowStock ? "text-orange-600" : "text-green-600"}`}>{lowStock ? "Low Stock" : "Normal"}</p>
+                                <p className="font-medium text-xs sm:text-sm">{item.stock}</p>
+                                <p className={`text-xs sm:text-sm ${lowStock ? "text-orange-600" : "text-green-600"}`}>{lowStock ? "Low Stock" : "Normal"}</p>
                               </div>
                             </TableCell>
-                            <TableCell>{item.supplier}</TableCell>
-                            <TableCell>
+                            <TableCell className="hidden md:table-cell">{item.supplier}</TableCell>
+                            <TableCell className="hidden lg:table-cell">
                               <div className="text-sm">
                                 <p>Buy: Rs{(item.purchaseCost || 0).toLocaleString()}</p>
                                 <p>Sell: Rs{(item.currentPrice || 0).toLocaleString()}</p>
                               </div>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden sm:table-cell">
                               <Badge variant={item.stock === 0 ? "destructive" : "default"}>{item.stock === 0 ? "out-of-stock" : "available"}</Badge>
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="hidden lg:table-cell">
                               {lastStockMovement
                                 ? (
                                   <div>

@@ -13,14 +13,14 @@ import { Progress } from "@/components/ui/progress"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Plus, Search, Wallet, ArrowDownCircle, ArrowUpCircle, Clock,
-  CheckCircle2, XCircle, AlertTriangle, Receipt, RefreshCw, Eye
+  CheckCircle2, XCircle, AlertTriangle, Receipt, RefreshCw
 } from "lucide-react"
 import {
   getDrawers, createDrawer, requestCash, approveRequest,
   recordReplenishment, listPendingRequests, seedPettyCashData,
   type PettyCashDrawer, type PettyCashRequest
 } from "@/lib/petty-cash-service"
-import { collection, query, where, getDocs, orderBy, Timestamp } from "firebase/firestore"
+import { collection, query, getDocs, Timestamp } from "firebase/firestore"
 import { firestore } from "@/lib/firebase"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
@@ -86,43 +86,62 @@ export function PettyCashModule() {
 
   // ── Handlers ──────────────────────────────────────
   const handleCreateDrawer = async () => {
-    if (!newDrawerForm.name || !newDrawerForm.balance || !newDrawerForm.threshold) {
+    const balance = Number(newDrawerForm.balance)
+    const threshold = Number(newDrawerForm.threshold)
+
+    if (!newDrawerForm.name.trim() || !newDrawerForm.balance || !newDrawerForm.threshold) {
       toast({ title: "Missing Fields", description: "Please fill all fields.", variant: "destructive" })
       return
     }
+
+    if (!Number.isFinite(balance) || !Number.isFinite(threshold) || balance < 0 || threshold < 0) {
+      toast({ title: "Invalid Amount", description: "Enter valid non-negative numbers for balance and threshold.", variant: "destructive" })
+      return
+    }
+
     try {
       await createDrawer({
-        name: newDrawerForm.name,
-        balance: parseFloat(newDrawerForm.balance),
-        threshold: parseFloat(newDrawerForm.threshold),
+        name: newDrawerForm.name.trim(),
+        balance,
+        threshold,
       })
       toast({ title: "Drawer Created", description: `"${newDrawerForm.name}" has been created.` })
       setNewDrawerForm({ name: "", balance: "", threshold: "" })
       setShowNewDrawer(false)
       fetchData()
-    } catch {
-      toast({ title: "Error", description: "Failed to create drawer.", variant: "destructive" })
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to create drawer."
+      toast({ title: "Error", description: message, variant: "destructive" })
     }
   }
 
   const handleSubmitRequest = async () => {
-    if (!newRequestForm.drawerId || !newRequestForm.amount || !newRequestForm.purpose) {
+    const amount = Number(newRequestForm.amount)
+
+    if (!newRequestForm.drawerId || !newRequestForm.amount || !newRequestForm.purpose.trim()) {
       toast({ title: "Missing Fields", description: "Please fill all fields.", variant: "destructive" })
       return
     }
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast({ title: "Invalid Amount", description: "Please enter an amount greater than 0.", variant: "destructive" })
+      return
+    }
+
     try {
       await requestCash({
         drawerId: newRequestForm.drawerId,
-        amount: parseFloat(newRequestForm.amount),
-        purpose: newRequestForm.purpose,
+        amount,
+        purpose: newRequestForm.purpose.trim(),
         requestedBy: user?.uid || "unknown",
       })
       toast({ title: "Request Submitted", description: "Your petty cash request is pending approval." })
       setNewRequestForm({ drawerId: "", amount: "", purpose: "" })
       setShowNewRequest(false)
       fetchData()
-    } catch {
-      toast({ title: "Error", description: "Failed to submit request.", variant: "destructive" })
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to submit request."
+      toast({ title: "Error", description: message, variant: "destructive" })
     }
   }
 
@@ -138,15 +157,27 @@ export function PettyCashModule() {
   }
 
   const handleReplenish = async () => {
-    if (!selectedDrawerId || !replenishAmount) return
+    const amount = Number(replenishAmount)
+
+    if (!selectedDrawerId || !replenishAmount) {
+      toast({ title: "Missing Fields", description: "Select a drawer and enter an amount.", variant: "destructive" })
+      return
+    }
+
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast({ title: "Invalid Amount", description: "Please enter an amount greater than 0.", variant: "destructive" })
+      return
+    }
+
     try {
-      await recordReplenishment(selectedDrawerId, parseFloat(replenishAmount))
-      toast({ title: "Replenished", description: `Rs ${parseFloat(replenishAmount).toLocaleString()} added to drawer.` })
+      await recordReplenishment(selectedDrawerId, amount)
+      toast({ title: "Replenished", description: `Rs ${amount.toLocaleString()} added to drawer.` })
       setReplenishAmount("")
       setShowReplenish(false)
       fetchData()
-    } catch {
-      toast({ title: "Error", description: "Failed to replenish drawer.", variant: "destructive" })
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to replenish drawer."
+      toast({ title: "Error", description: message, variant: "destructive" })
     }
   }
 
@@ -165,8 +196,6 @@ export function PettyCashModule() {
   // ── Computed ──────────────────────────────────────
   const totalBalance = drawers.reduce((s, d) => s + d.balance, 0)
   const lowDrawers = drawers.filter(d => d.balance < d.threshold)
-  const totalDrawerLimit = drawers.reduce((s, d) => s + d.threshold, 0)
-  const utilizationPct = totalDrawerLimit > 0 ? Math.round(((totalDrawerLimit - totalBalance) / totalDrawerLimit) * 100) : 0
 
   const filteredRequests = allRequests.filter(r =>
     r.purpose?.toLowerCase().includes(searchTerm.toLowerCase()) ||

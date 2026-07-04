@@ -407,10 +407,10 @@ export default function CustomerManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
-          <h2 className="text-3xl font-bold tracking-tight">Customer Management</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Customer Management</h2>
           <div className="flex bg-muted/50 p-1 rounded-lg w-full sm:w-auto overflow-x-auto">
             <DateRangeFilter
               filterType={dateFilterType}
@@ -449,7 +449,7 @@ export default function CustomerManagement() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-2 sm:gap-3 md:gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
@@ -529,9 +529,9 @@ export default function CustomerManagement() {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Contact</TableHead>
-                      <TableHead>Type</TableHead>
+                      <TableHead className="min-w-[150px]">Customer</TableHead>
+                      <TableHead className="hidden sm:table-cell">Contact</TableHead>
+                      <TableHead className="hidden md:table-cell">Type</TableHead>
                       <TableHead>Running Balance</TableHead>
                       <TableHead>Actions</TableHead>
                     </TableRow>
@@ -544,24 +544,24 @@ export default function CustomerManagement() {
                         onClick={() => handleViewCustomer(customer)}
                       >
                         <TableCell>
-                          <div>
-                            <p className="font-medium">{customer.name}</p>
-                            <Badge variant={getCustomerTypeColor(customer.customerType || "regular") as "destructive" | "default" | "secondary" | "outline" | undefined} className="text-xs">
+                          <div className="min-w-[150px]">
+                            <p className="font-medium text-sm sm:text-base truncate">{customer.name}</p>
+                            <Badge variant={getCustomerTypeColor(customer.customerType || "regular") as "destructive" | "default" | "secondary" | "outline" | undefined} className="text-xs md:hidden w-fit">
                               {customer.customerType || "Regular"}
                             </Badge>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden sm:table-cell">
                           <p className="text-sm">{customer.phone}</p>
                           {customer.email && <p className="text-xs text-muted-foreground">{customer.email}</p>}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden md:table-cell">
                           <Badge variant={getCustomerTypeColor(customer.customerType || "regular") as "destructive" | "default" | "secondary" | "outline" | undefined}>
                             {customer.customerType || "Regular"}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={(customerRunningBalances[customer.id] || 0) > 0 ? "destructive" : (customerRunningBalances[customer.id] || 0) < 0 ? "secondary" : "default"}>
+                          <Badge variant={(customerRunningBalances[customer.id] || 0) > 0 ? "destructive" : (customerRunningBalances[customer.id] || 0) < 0 ? "secondary" : "default"} className="text-xs sm:text-sm">
                             {isCalculatingBalances ? (
                               <div className="h-3 w-3 mr-1 animate-spin rounded-full border-2 border-current border-t-transparent" />
                             ) : (customerRunningBalances[customer.id] || 0) > 0 ? (
@@ -576,7 +576,7 @@ export default function CustomerManagement() {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <div className="flex gap-1">
+                          <div className="flex flex-wrap gap-1">
                             <Button
                               size="sm"
                               variant="outline"
@@ -633,8 +633,8 @@ export default function CustomerManagement() {
             <CardContent>
               <div className="space-y-4">
                 {customers.slice(0, 10).map((customer, index) => (
-                  <div key={customer.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-4">
+                  <div key={customer.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-4 border rounded-lg gap-2 sm:gap-4">
+                    <div className="flex items-start sm:items-center gap-2 sm:gap-4">
                       <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-bold">
                         {index + 1}
                       </div>
@@ -652,7 +652,7 @@ export default function CustomerManagement() {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
+                      <div className="text-left sm:text-right">
                       <p className="font-bold text-lg">Rs{(customerRevenueMap[customer.phone] || 0).toLocaleString()}</p>
                       <p className="text-sm text-muted-foreground">Last purchase: {customer.updatedAt}</p>
                     </div>
@@ -678,7 +678,7 @@ export default function CustomerManagement() {
                   .sort((a, b) => new Date(b.updatedAt || "").getTime() - new Date(a.updatedAt || "").getTime())
                   .slice(0, 10)
                   .map((customer) => (
-                    <div key={customer.id} className="flex items-center justify-between p-4 border rounded-lg">
+                    <div key={customer.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-4 border rounded-lg gap-2 sm:gap-4">
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="font-medium">{customer.name}</p>
@@ -692,7 +692,7 @@ export default function CustomerManagement() {
                           {customer.address && <span>{customer.address}</span>}
                         </p>
                       </div>
-                      <div className="text-right">
+                      <div className="text-left sm:text-right">
                         <p className="font-medium">{customer.updatedAt}</p>
                         <p className="text-sm text-muted-foreground">Last updated</p>
                       </div>

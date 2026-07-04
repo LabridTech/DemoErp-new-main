@@ -1000,7 +1000,7 @@ export function PurchasingLedger() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {showSupplierProfilePage && selectedSupplierForProfilePage ? (
         <SupplierProfilePage
           supplier={selectedSupplierForProfilePage}
@@ -1046,7 +1046,7 @@ export function PurchasingLedger() {
       ) : (
         <>
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <h2 className="text-3xl font-bold tracking-tight">Purchasing Ledger</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Purchasing Ledger</h2>
             <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
               <div className="flex bg-muted/50 p-1 rounded-lg overflow-x-auto w-full sm:w-auto">
                 <DateRangeFilter
@@ -1075,7 +1075,7 @@ export function PurchasingLedger() {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid gap-4 md:grid-cols-4">
+          <div className="grid gap-2 sm:gap-3 md:gap-4 md:grid-cols-4">
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium">Total Purchases</CardTitle>
@@ -1179,12 +1179,12 @@ export function PurchasingLedger() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Invoice</TableHead>
-                          <TableHead>Supplier</TableHead>
-                          <TableHead>Items</TableHead>
+                          <TableHead className="min-w-[140px]">Invoice</TableHead>
+                          <TableHead className="min-w-[160px]">Supplier</TableHead>
+                          <TableHead className="hidden sm:table-cell">Items</TableHead>
                           <TableHead>Amount</TableHead>
                           <TableHead>Payment</TableHead>
-                          <TableHead>Date</TableHead>
+                          <TableHead className="hidden md:table-cell">Date</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -1212,7 +1212,7 @@ export function PurchasingLedger() {
                                 )}
                               </div>
                             </TableCell>
-                            <TableCell className="h-24 align-top">
+                            <TableCell className="h-24 align-top hidden sm:table-cell">
                               <div>
                                 <p className="text-sm">{record.items?.length ?? 0} items</p>
                                 <p className="text-xs text-muted-foreground">
@@ -1254,14 +1254,14 @@ export function PurchasingLedger() {
                                 )}
                               </div>
                             </TableCell>
-                            <TableCell className="h-24 align-top">
+                            <TableCell className="h-24 align-top hidden md:table-cell">
                               <div>
                                 <p className="text-sm">{new Date(record.createdAt).toLocaleDateString()}</p>
                                 <p className="text-xs text-muted-foreground">{new Date(record.createdAt).toLocaleTimeString()}</p>
                               </div>
                             </TableCell>
                             <TableCell className="h-24 align-top">
-                              <div className="flex gap-1">
+                              <div className="flex flex-wrap gap-1">
                                 <Button
                                   size="sm"
                                   variant="outline"
@@ -1396,11 +1396,11 @@ export function PurchasingLedger() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Invoice</TableHead>
-                          <TableHead>Supplier</TableHead>
-                          <TableHead>Items</TableHead>
+                          <TableHead className="min-w-[140px]">Invoice</TableHead>
+                          <TableHead className="min-w-[160px]">Supplier</TableHead>
+                          <TableHead className="hidden sm:table-cell">Items</TableHead>
                           <TableHead>Amount</TableHead>
-                          <TableHead>Date</TableHead>
+                          <TableHead className="hidden md:table-cell">Date</TableHead>
                           <TableHead>Actions</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -1434,7 +1434,7 @@ export function PurchasingLedger() {
                                   <p className="text-sm text-muted-foreground">{record.supplierPhone}</p>
                                 </div>
                               </TableCell>
-                              <TableCell>
+                              <TableCell className="hidden sm:table-cell">
                                 <div>
                                   <p className="text-sm">{record.items?.length ?? 0} items</p>
                                   <p className="text-xs text-muted-foreground">
@@ -1452,14 +1452,14 @@ export function PurchasingLedger() {
                                   )}
                                 </div>
                               </TableCell>
-                              <TableCell>
+                              <TableCell className="hidden md:table-cell">
                                 <div>
                                   <p className="text-sm">{new Date(record.createdAt).toLocaleDateString()}</p>
                                   <p className="text-xs text-muted-foreground">{new Date(record.createdAt).toLocaleTimeString()}</p>
                                 </div>
                               </TableCell>
                               <TableCell>
-                                <div className="flex gap-1">
+                                <div className="flex flex-wrap gap-1">
                                   <Button
                                     size="sm"
                                     variant="outline"

@@ -24,7 +24,7 @@ import { ProtectedRoute } from "@/components/auth/protected-route"
 import { RoleProtectedRoute } from "@/components/auth/role-protected-route"
 import { useAuth } from "@/contexts/auth-context"
 import { LogOut, User, RefreshCw } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ChangePasswordModal } from "@/components/profile/change-password-modal"
 import { CacheManager } from "@/components/cache-manager"
@@ -63,7 +63,7 @@ import { GeneralLedgerManagement } from "@/components/general-ledger-management"
 // import { RoleProtectedRoute } from "@/components/auth/role-protected-route"
 // import { useAuth } from "@/contexts/auth-context"
 // import { LogOut, User, RefreshCw } from "lucide-react"
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 // import { ThemeToggle } from "@/components/theme-toggle"
 // import { ChangePasswordModal } from "@/components/profile/change-password-modal"
 // import { CacheManager } from "@/components/cache-manager"
@@ -282,7 +282,7 @@ export default function ERPSystem() {
           }}
         >
           {/* ── Premium Header ─────────────────────── */}
-          <header className="premium-header flex h-16 items-center justify-between px-4 lg:px-6 sticky top-0 z-30">
+          <header className="premium-header flex h-16 items-center justify-between px-2 sm:px-4 lg:px-6 sticky top-0 z-30">
             <div className="flex items-center gap-3">
               <SidebarTrigger className="rounded-lg hover:bg-muted/60 transition-colors duration-200" />
 
@@ -303,7 +303,7 @@ export default function ERPSystem() {
               </div>
 
               {/* Active module badge */}
-              <div className="hidden md:flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-3 py-1">
+              <div className="hidden lg:flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/8 px-3 py-1">
                 <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
                 <span className="text-xs font-semibold text-primary">
                   {moduleLabels[activeModule] || "Dashboard"}
@@ -390,7 +390,7 @@ export default function ERPSystem() {
           </header>
 
           {/* ── Module content ──────────────────────── */}
-          <div className="flex-1 overflow-auto p-4 lg:p-6 pb-8">
+           <div className="flex-1 overflow-auto p-2 sm:p-4 lg:p-6 pb-8">
             {renderModule()}
           </div>
         </main>

@@ -9,7 +9,14 @@
       "Bash(npm run build 2>&1 || true)",
       "Bash(npm run lint 2>&1 || true)",
       "Bash(npm run build 2>&1)",
-      "Bash(npx eslint src/components/general-ledger-management.tsx 2>&1)"
+      "Bash(npx eslint src/components/general-ledger-management.tsx 2>&1)",
+      "Bash(npx eslint src/app/page.tsx src/components/dashboard.tsx src/components/dashboard/SalesOverview.tsx src/components/dashb…)",
+      "Bash(npm run type-check)",
+      "Bash(npx eslint src/app/page.tsx src/components/dashboard.tsx src/components/dashboard/SalesOverview.tsx src/components/dashb…)",
+      "Bash(npm run build)",
+      "Bash(npx eslint src/components/customer-management.tsx src/components/supplier-management.tsx src/components/sales-ledger.tsx…)",
+      "Bash(npm run type-check 2>&1 || true)",
+      "Bash(npm run lint)"
     ]
   }
 }

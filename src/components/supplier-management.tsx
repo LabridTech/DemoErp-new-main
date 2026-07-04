@@ -700,11 +700,11 @@ export function SupplierManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="w-full sm:w-auto">
-          <h1 className="text-3xl font-bold">Supplier Management</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold">Supplier Management</h1>
           <p className="text-muted-foreground">Manage your suppliers and their information</p>
         </div>
         <div className="flex bg-muted/50 p-1 rounded-lg w-full sm:w-auto overflow-x-auto">
@@ -726,7 +726,7 @@ export function SupplierManagement() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-2 sm:gap-3 md:gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Total Purchases</CardTitle>
@@ -835,9 +835,9 @@ export function SupplierManagement() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Supplier</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead>Address</TableHead>
+                  <TableHead className="min-w-[150px]">Supplier</TableHead>
+                  <TableHead className="hidden sm:table-cell">Phone</TableHead>
+                  <TableHead className="hidden md:table-cell">Address</TableHead>
                   <TableHead>Latest Running Balance</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
@@ -850,27 +850,27 @@ export function SupplierManagement() {
                     onClick={() => openSupplierDetail(supplier)}
                   >
                     <TableCell>
-                      <div>
-                        <p className="font-medium">{supplier.name}</p>
-                        <p className="text-sm text-muted-foreground">
+                      <div className="min-w-[150px]">
+                        <p className="font-medium text-sm sm:text-base truncate">{supplier.name}</p>
+                        <p className="text-xs text-muted-foreground">
                           Added: {new Date(supplier.createdAt).toLocaleDateString()}
                         </p>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden sm:table-cell">
                       <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-muted-foreground" />
-                        <span>{supplier.phone}</span>
+                        <span className="text-sm">{supplier.phone}</span>
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="hidden md:table-cell">
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm">{supplier.address}</span>
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={(supplierRunningBalances[supplier.id] || 0) > 0 ? "destructive" : (supplierRunningBalances[supplier.id] || 0) < 0 ? "secondary" : "default"}>
+                      <Badge variant={(supplierRunningBalances[supplier.id] || 0) > 0 ? "destructive" : (supplierRunningBalances[supplier.id] || 0) < 0 ? "secondary" : "default"} className="text-xs sm:text-sm">
                         {isCalculatingBalances ? (
                           <div className="h-3 w-3 mr-1 animate-spin rounded-full border-2 border-current border-t-transparent" />
                         ) : (supplierRunningBalances[supplier.id] || 0) > 0 ? (
@@ -885,7 +885,7 @@ export function SupplierManagement() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <div className="flex gap-1">
+                      <div className="flex flex-wrap gap-1">
                         <Button
                           size="sm"
                           variant="outline"

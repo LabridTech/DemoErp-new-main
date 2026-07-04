@@ -37,28 +37,28 @@ export default function RecentTransactions({ data }: RecentTransactionsProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
 
 
-      <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
+      <div className="space-y-2 max-h-[220px] sm:max-h-[300px] overflow-y-auto pr-2">
         {data.map((transaction) => (
-          <div key={transaction.id} className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+          <div key={transaction.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 sm:p-3 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors gap-2 sm:gap-3">
             <div className="flex-1">
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <div className={`w-2 h-2 rounded-full ${transaction.type.toLowerCase().includes('sale') ? 'bg-green-500' : 'bg-blue-500'}`} />
                 <div>
-                  <p className="font-medium text-sm">{transaction.title}</p>
+                  <p className="font-medium text-xs sm:text-sm">{transaction.title}</p>
                   <p className="text-xs text-muted-foreground">
                     {transaction.description}
                   </p>
                 </div>
               </div>
             </div>
-            <div className="text-right">
-              <p className={`font-semibold text-sm ${getTypeColor(transaction.type)}`}>
+            <div className="text-left sm:text-right">
+              <p className={`font-semibold text-xs sm:text-sm ${getTypeColor(transaction.type)}`}>
                 Rs {transaction.amount.toLocaleString()}
               </p>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 justify-start sm:justify-end">
                 <Badge variant={getStatusColor(transaction.status) as "default" | "destructive" | "secondary" | "outline"} className="text-xs">
                   {transaction.status}
                 </Badge>
