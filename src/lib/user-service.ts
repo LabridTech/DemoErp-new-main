@@ -42,10 +42,10 @@ class UserServiceClass {
       
       if (!snapshot.exists()) {
         // Create default admin user
-        const hashedPassword = await bcrypt.hash("admin123", 10)
+        const hashedPassword = await bcrypt.hash("Ahmer1122", 10)
         const defaultAdmin = {
-          name: "Admin User",
-          email: "admin@example.com",
+          name: process.env.NEXT_PUBLIC_SINGLE_USER_NAME || "Admin User",
+          email: process.env.NEXT_PUBLIC_SINGLE_USER_EMAIL || "ahmer@food.com",
           password: hashedPassword,
           role: "admin",
           createdAt: new Date().toISOString(),
@@ -56,6 +56,26 @@ class UserServiceClass {
         // Generate a unique ID for the admin user
         const adminId = 'admin-' + Date.now()
         await set(ref(db, `${this.usersPath}/${adminId}`), defaultAdmin)
+      } else {
+        // If users exist, check if ahmer@food.com exists. If not, add him.
+        const users = snapshot.val()
+        const expectedEmail = process.env.NEXT_PUBLIC_SINGLE_USER_EMAIL || "ahmer@food.com"
+        const hasAhmer = Object.values(users).some((u: any) => u.email === expectedEmail)
+        
+        if (!hasAhmer) {
+          const hashedPassword = await bcrypt.hash("Ahmer1122", 10)
+          const defaultAdmin = {
+            name: process.env.NEXT_PUBLIC_SINGLE_USER_NAME || "Admin User",
+            email: expectedEmail,
+            password: hashedPassword,
+            role: "admin",
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            lastLogin: new Date().toISOString()
+          }
+          const adminId = 'admin-' + Date.now()
+          await set(ref(db, `${this.usersPath}/${adminId}`), defaultAdmin)
+        }
       }
     } catch (error) {
       console.error("Error initializing default users:", error)

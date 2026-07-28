@@ -33,7 +33,8 @@ class AuthService {
     try {
       const usersRef = ref(db, this.USERS_PATH)
       const snapshot = await get(usersRef)
-      
+      console.log(snapshot, "snapshot");
+
       // If no users exist, create the default admin user
       if (!snapshot.exists()) {
         const defaultUser: User = {
@@ -56,7 +57,7 @@ class AuthService {
   // Login with email and password
   static async login(email: string, password: string): Promise<AuthState> {
     console.log('🔐 Login attempt:', { email, password: '***' })
-    
+
     if (!db) {
       console.error('❌ Database not initialized')
       throw new Error('Database not initialized')
@@ -66,10 +67,10 @@ class AuthService {
     try {
       const usersRef = ref(db, this.USERS_PATH)
       console.log('📍 Fetching users from path:', this.USERS_PATH)
-      
+
       const snapshot = await get(usersRef)
       console.log('📊 Snapshot exists:', snapshot.exists())
-      
+
       if (!snapshot.exists()) {
         console.error('❌ No users found in database')
         throw new Error('No users found in database')
@@ -78,12 +79,12 @@ class AuthService {
       const users = snapshot.val() as Record<string, User>
       console.log('👥 Users found:', Object.keys(users))
       console.log('🔍 Looking for user with email:', email)
-      
+
       // Debug: Log all users for comparison
       Object.values(users).forEach(u => {
         console.log(`📋 User: ${u.email} (${u.name}) - Password match: ${u.password === password}`)
       })
-      
+
       const user = Object.values(users).find(u => {
         const emailMatch = u.email.toLowerCase() === email.toLowerCase()
         const passwordMatch = u.password === password
@@ -95,7 +96,7 @@ class AuthService {
         console.error('❌ User not found or password mismatch')
         throw new Error('Invalid email or password')
       }
-      
+
       console.log('✅ User authenticated:', user.name)
 
       // Update last login

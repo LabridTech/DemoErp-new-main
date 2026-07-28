@@ -25,11 +25,12 @@ import { firestore } from "@/lib/firebase"
 import { useAuth } from "@/contexts/auth-context"
 import { useToast } from "@/hooks/use-toast"
 
-// Helper to format Firestore timestamps
-function formatDate(ts: Timestamp | undefined): string {
+// Helper to format timestamps (supports both RTDB numbers and Firestore Timestamps)
+function formatDate(ts: number | Timestamp | undefined): string {
   if (!ts) return "—"
   try {
-    return ts.toDate().toLocaleDateString("en-US", {
+    const date = typeof ts === "number" ? new Date(ts) : ts.toDate()
+    return date.toLocaleDateString("en-US", {
       month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit"
     })
   } catch {
@@ -67,6 +68,8 @@ export function PettyCashModule() {
         getDrawers(),
         listPendingRequests()
       ])
+      console.log("drawerData", drawerData);
+      console.log("pendingData", pendingData);
       setDrawers(drawerData)
       setPendingRequests(pendingData as PettyCashRequest[])
 
@@ -99,12 +102,14 @@ export function PettyCashModule() {
       return
     }
 
+
     try {
       await createDrawer({
         name: newDrawerForm.name.trim(),
         balance,
         threshold,
       })
+      console.log("drawer created", newDrawerForm.name, balance, threshold)
       toast({ title: "Drawer Created", description: `"${newDrawerForm.name}" has been created.` })
       setNewDrawerForm({ name: "", balance: "", threshold: "" })
       setShowNewDrawer(false)
@@ -336,6 +341,7 @@ export function PettyCashModule() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {drawers.map(drawer => {
+                console.log(drawer);
                 const isLow = drawer.balance < drawer.threshold
                 const pct = drawer.threshold > 0 ? Math.min(100, Math.round((drawer.balance / (drawer.threshold * 3)) * 100)) : 50
                 return (
