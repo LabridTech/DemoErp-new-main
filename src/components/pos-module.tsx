@@ -263,6 +263,7 @@ function POSModule() {
   const [lastSaleData, setLastSaleData] = useState<InvoiceData | null>(null)
   // Mobile tab: "products" | "order"
   const [mobileTab, setMobileTab] = useState<"products" | "order">("products")
+  const [cashGiven, setCashGiven] = useState<string>("")
 
   useEffect(() => {
     const load = async () => {
@@ -398,7 +399,7 @@ function POSModule() {
       if (staffMember) { const emp = employees.find(e => e.id === staffMember); if (emp) await EmployeePerformanceService.incrementSalesMetrics(staffMember, emp.name, total).catch(console.error) }
       toast({ title: "Sale completed!", description: `Invoice #${invoiceNumber} · Rs ${total.toLocaleString()}` })
       setLastSaleData({ invoiceNumber, date: saleData.date, time: saleData.time, customerName: saleData.customerName, customerPhone: saleData.customerPhone, customerAddress: saleData.customerAddress, staffName: staffNameForInvoice, items: cart.map(i => ({ name: i.name, code: i.code, quantity: i.quantity, unitPrice: i.unitPrice, tradeDiscountFreeItems: i.tradeDiscountFreeItems || 0, fabricType: i.fabricType || 'N/A', size: i.size || 'N/A' })), subtotal, totalDiscount, total })
-      setShowPostSaleModal(true); resetForm(); setMobileTab("products")
+      setShowPostSaleModal(true); resetForm(); setMobileTab("products"); setCashGiven("")
     } catch { toast({ title: "Error", description: "Failed to complete sale.", variant: "destructive" }) }
     finally { setIsProcessingSale(false) }
   }
@@ -600,6 +601,14 @@ function POSModule() {
               <p className="text-[11px] font-semibold text-amber-800 dark:text-amber-400">Partial payment (optional)</p>
               <Input type="number" placeholder="Enter amount" min="0" value={partialPaymentAmount} onChange={e => setPartialPaymentAmount(e.target.value)} className="h-9 text-sm rounded-xl bg-background" />
               {partialPaymentAmount && parseFloat(partialPaymentAmount) > 0 && <p className="text-[11px] text-amber-700 dark:text-amber-400">Remaining: <strong>Rs {(total - parseFloat(partialPaymentAmount)).toLocaleString()}</strong></p>}
+            </div>
+          )}
+          {paymentMethod === "cash" && (
+            <div className="mt-2.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-xl p-3 space-y-2">
+              <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-400">Cash Given</p>
+              <Input type="number" placeholder="Enter amount" min="0" value={cashGiven} onChange={e => setCashGiven(e.target.value)} className="h-9 text-sm rounded-xl bg-background" />
+              {cashGiven && parseFloat(cashGiven) >= total && <p className="text-[11px] text-emerald-700 dark:text-emerald-400">Cash Receive (Change): <strong>Rs {(parseFloat(cashGiven) - total).toLocaleString()}</strong></p>}
+              {cashGiven && parseFloat(cashGiven) < total && <p className="text-[11px] text-red-500">Insufficient amount</p>}
             </div>
           )}
         </div>

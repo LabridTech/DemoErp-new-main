@@ -195,9 +195,12 @@ export function AppSidebar({ activeModule, setActiveModule }: AppSidebarProps) {
 
         {/* Bottom branding */}
         <div className="mx-3 mb-3 mt-auto pt-4 border-t border-border/50">
-          <div className="flex items-center justify-center gap-1.5 text-[10px] text-muted-foreground/60">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/60 animate-pulse" />
-            Powered by LabridTech
+          <div className="flex flex-col items-center justify-center gap-1 text-[10px] text-muted-foreground/60">
+            <div className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary/60 animate-pulse" />
+              <span>Made by LabridTech</span>
+            </div>
+            <span>Test Version 3.00</span>
           </div>
         </div>
       </SidebarContent>

@@ -175,6 +175,7 @@ function PurchasingModule({ defaultTab = "purchase" }: PurchasingModuleProps = {
   const [selectedPurchase, setSelectedPurchase] = useState<Purchase | null>(null)
   // Mobile tab
   const [mobileTab, setMobileTab] = useState<"products" | "order">("products")
+  const [cashGiven, setCashGiven] = useState<string>("")
 
   const filteredSuppliers = suppliers.filter(s =>
     (s.name || '').toLowerCase().includes(supplierSearchTerm.toLowerCase()) ||
@@ -269,7 +270,7 @@ function PurchasingModule({ defaultTab = "purchase" }: PurchasingModuleProps = {
       for (const item of cart) { const p = products.find(p => p.id === item.id); if (p) { const avgPrice = parseFloat(((item.individualPrices || []).reduce((s, x) => s + x, 0) / item.quantity).toFixed(2)); const totalQty = item.quantity + (item.tradeDiscountFreeItems || 0); await ProductService.updateProduct(item.id, { stock: p.stock + totalQty, purchaseCost: avgPrice, updatedAt: new Date().toISOString() }); await ProductService.addStockMovement({ itemId: item.id, itemName: item.name, type: "in", quantity: item.quantity, reason: `Purchase - Avg Rs${avgPrice.toFixed(2)}`, staff: "System", date: new Date().toISOString(), reference: invoiceNumber }); if (item.tradeDiscountFreeItems && item.tradeDiscountFreeItems > 0) await ProductService.addStockMovement({ itemId: item.id, itemName: item.name, type: "in", quantity: item.tradeDiscountFreeItems, reason: "Trade Discount - Free Items", staff: "System", date: new Date().toISOString(), reference: invoiceNumber }) } }
       setProducts(products.map(p => { const ci = cart.find(i => i.id === p.id); return ci ? { ...p, stock: p.stock + ci.quantity + (ci.tradeDiscountFreeItems || 0) } : p }))
       setLastPurchaseData({ invoiceNumber, date: formatDate(new Date()), time: new Date().toLocaleTimeString(), supplierName, supplierPhone, supplierAddress, staffName: "System", items: cart.map(i => ({ name: i.name, code: i.code, quantity: i.quantity, unitPrice: i.unitPrice, subtotal: i.totalAmount || i.unitPrice * i.quantity, fabricType: i.fabricType || 'N/A', size: i.size || 'N/A', tradeDiscountFreeItems: i.tradeDiscountFreeItems || 0 })), subtotal, totalDiscount, total })
-      setShowInvoiceModal(true); toast({ title: "Purchase completed!", description: `Invoice #${invoiceNumber} · Rs ${total.toLocaleString()}` }); resetForm(); setPurchases(await PurchaseService.getAllPurchases()); setMobileTab("products")
+      setShowInvoiceModal(true); toast({ title: "Purchase completed!", description: `Invoice #${invoiceNumber} · Rs ${total.toLocaleString()}` }); resetForm(); setPurchases(await PurchaseService.getAllPurchases()); setMobileTab("products"); setCashGiven("")
     } catch { toast({ title: "Error", description: "Failed to complete purchase.", variant: "destructive" }) }
     finally { setIsProcessingPurchase(false) }
   }
@@ -510,6 +511,14 @@ function PurchasingModule({ defaultTab = "purchase" }: PurchasingModuleProps = {
             <div className="mt-2.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-xl p-3 space-y-2">
               <p className="text-[11px] font-semibold text-amber-800 dark:text-amber-400">Partial payment (optional)</p>
               <Input type="number" placeholder="Enter amount" min="0" max={total} value={partialPaymentAmount} onChange={e => setPartialPaymentAmount(e.target.value)} className="h-9 text-sm rounded-xl bg-background" />
+            </div>
+          )}
+          {paymentMethod === "cash" && (
+            <div className="mt-2.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/50 rounded-xl p-3 space-y-2">
+              <p className="text-[11px] font-semibold text-emerald-800 dark:text-emerald-400">Cash Given</p>
+              <Input type="number" placeholder="Enter amount" min="0" value={cashGiven} onChange={e => setCashGiven(e.target.value)} className="h-9 text-sm rounded-xl bg-background" />
+              {cashGiven && parseFloat(cashGiven) >= total && <p className="text-[11px] text-emerald-700 dark:text-emerald-400">Cash Receive (Change): <strong>Rs {(parseFloat(cashGiven) - total).toLocaleString()}</strong></p>}
+              {cashGiven && parseFloat(cashGiven) < total && <p className="text-[11px] text-red-500">Insufficient amount</p>}
             </div>
           )}
         </div>
